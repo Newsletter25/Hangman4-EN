@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hangman Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #hangman-container {
+      font-family: monospace;
+      white-space: pre;
+      font-size: 20px;
+      display: inline-block;
+      text-align: left;
+    }
+    #word-display {
+      font-size: 28px;
+      margin-top: 20px;
+    }
+    #wrong-guesses {
+      margin-top: 20px;
+      text-decoration: line-through;
+      color: red;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hangman Game</h1>
+  <p><strong>Clue:</strong> Reasonable steps and care taken by a person to prevent a corporate debt from occurring</p>
+  <p>
+    Guess the word before the hangman is complete. If you guess a correct letter, it will be filled on the dashed line.
+    If you guess an incorrect letter, a body part will be drawn on the hangman. The game ends when the puzzle is solved
+    or the hangman is complete.
+  </p>
+
+  <div id="hangman-container"></div>
+  <p id="word-display"></p>
+
+  <input type="text" id="guess-input" maxlength="1" placeholder="Enter a letter"/>
+  <button onclick="makeGuess()">Guess</button>
+  <p id="wrong-guesses"></p>
+
+  <p>
+    For more information on this topic, refer to the
+    <a href="https://infozone.omega.dce-eir.net/english/r5041000/tlr/tlr09/drctrslblt-e.html" target="_blank">
+      Directors' liability – Tax programs TSO/NVCC collections page
+    </a>.
+  </p>
+
+  <script>
+    const correctWord = "DUE DILIGENCE".toUpperCase();
+
+    let guessedWord = correctWord.split('').map(letter => letter === ' ' ? ' ' : '_').join('');
+    let wrongGuesses = [];
+    let incorrectGuesses = 0;
+
+    function updateDisplay() {
+      document.getElementById('word-display').innerHTML = formatWordDisplay(guessedWord);
+      document.getElementById('hangman-container').textContent = drawHangman(incorrectGuesses);
+      document.getElementById('wrong-guesses').innerHTML = wrongGuesses.map(letter =>
+        `<span style="text-decoration: line-through;">${letter}</span>`).join(' ');
+    }
+
+    function formatWordDisplay(word) {
+      let formatted = '';
+      for (let i = 0; i < word.length; i++) {
+        if (word[i] === ' ') {
+          formatted += '&nbsp;&nbsp;&nbsp;&nbsp;'; // 4 non-breaking spaces
+        } else if (word[i] === '_') {
+          formatted += '_&nbsp;';
+        } else {
+          formatted += word[i] + '&nbsp;';
+        }
+      }
+      return formatted.trim();
+    }
+
+    function makeGuess() {
+      let guess = document.getElementById('guess-input').value.toUpperCase();
+      document.getElementById('guess-input').value = '';
+      if (!guess || guessedWord.includes(guess) || wrongGuesses.includes(guess)) return;
+
+      if (correctWord.includes(guess)) {
+        guessedWord = correctWord.split('').map((letter, i) =>
+          letter === guess ? guess : guessedWord[i]).join('');
+      } else {
+        wrongGuesses.push(guess);
+        incorrectGuesses++;
+      }
+
+      updateDisplay();
+
+      if (guessedWord === correctWord) {
+        alert("Congratulations! You solved the puzzle.");
+      } else if (incorrectGuesses >= 8) {
+        alert("Game over! The correct word was: " + correctWord);
+      }
+    }
+
+    function drawHangman(stage) {
+      const hangmanStages = [
+`   _______
+   |     |
+   |     
+   |     
+   |     
+  _|_____
+`,
+`   _______
+   |     |
+   |     O
+   |     
+   |     
+  _|_____
+`,
+`   _______
+   |     |
+   |     O
+   |     |
+   |     
+  _|_____
+`,
+`   _______
+   |     |
+   |     O
+   |    /|
+   |     
+  _|_____
+`,
+`   _______
+   |     |
+   |     O
+   |    /|\\
+   |     
+  _|_____
+`,
+`   _______
+   |     |
+   |     O
+   |    /|\\
+   |    / 
+  _|_____
+`,
+`   _______
+   |     |
+   |     O
+   |    /|\\
+   |    / \\
+  _|_____
+`,
+`   _______
+   |     |
+   |     X
+   |    /|\\
+   |    / \\
+  _|_____
+`
+      ];
+
+      return hangmanStages[Math.min(stage, hangmanStages.length - 1)];
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>
+
